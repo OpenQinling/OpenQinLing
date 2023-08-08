@@ -26,7 +26,7 @@
 		dataAddress_bus,//数据访问地址输出[32bits]
 		dataRW_ctrl,//数据读写请求信号线,0/1为不读不写,2为读,3为写[2bits]
 		dataRW_size,//读写的数据量，1-4字节。1位读1字节，2位读2字节，3为读4字节
-		dataRW_cplt,
+		dataRW_cplt,//读写数据缓存响应的接口，当为1表示响应了，cpu在读写数据会阻塞
 
            //cpu内存寄存器数据的查看接口(用于Debug);sys_d为3bits,其余都为32bits
 		r1_d,r2_d,r3_d,r4_d,r5_d,r6_d,r7_d,r8_d,flag_d,pc_d,tpc_d,ipc_d,sp_d,tlb_d,sys_d
