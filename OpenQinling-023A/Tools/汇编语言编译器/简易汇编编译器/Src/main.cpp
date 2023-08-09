@@ -1,4 +1,4 @@
-﻿#include <QCoreApplication>
+#include <QCoreApplication>
 #include <QDebug>
 #include <QFile>
 #include <QFileInfo>
@@ -940,29 +940,6 @@ QString removeExpNote(QString txt){
     return out.join("");
 }
 
-//数据块解析[程序/数据代码都能写在一个.asm文件中，分配到不同的数据块中]
-/*
- *  内存块定义语法:   内存块类型(块名,起始地址):{内存块中的文本内容};
- *        内存块类型(块名,起始地址):File("内存块的文本内容在另一个文件中，该文件的路径");
- *        内存块类型(块名,起始地址):Bin("内存块已被单独编译为二进制，该二进制文件的路径");
- *  内存块类型: Data存放数据  Code存放指令
- *
- *  代码块内指令标记语法:  定义:<标记名>  使用:>标记名< ;会自动将 >标记名< 替换为标记定义位置的下条指令的
- *  标记语法:  [内存块名:偏移地址] 在Code块中的立即数与Data块中的数值可使用该语法，会自动根据内存块基地址+偏移地址替换为数值文本
- */
-class RAMBlock{
-public:
-    QString txt;//内存块中的文本
-    int type;//内存块类型[0为已经编译为二进制,1为数据块,2为代码块]
-    QByteArray bin;//如果内存块是二进制形式的，存储二进制数据
-    QString name;//内存块名称
-    uint address;//内存块基地址
-};
-
-QList<RAMBlock> compileRAMBlock(QString asm_txt,uint*isSuccess){
-    QList<RAMBlock> tmp;
-    return tmp;
-}
 
 
 int main(int argc, char *argv[])
