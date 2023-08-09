@@ -5,7 +5,7 @@
 
 <-023A-CPU实例化示例代码(verilog语言)->
     
-    OpenQinrange_023A core(
+    OpenQinling_023A core(
 		clk,//连接时钟信号源[建议在80-100MHZ]
 
           //外部中断接口
