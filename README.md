@@ -1,7 +1,7 @@
-# Qinridge-cpu
+# OpenQinling-cpu
 
 #### 介绍
-秦岭系列cpu软核
+秦岭系列cpu
 
 #### CPU架构/参数
 详情见各cpu版本的帮助文档
