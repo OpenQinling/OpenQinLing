@@ -1,3 +1,9 @@
+/*
+*该项目遵循GPL3.0开源协议
+*创建日期:2023年7月
+*最后修改日期:2023年8月
+*作者QQ邮箱地址:1969798169@qq.com
+*/
 //OpenQinling-023A内核
 module OpenQinling_023A(
 		input clk,//时钟接口
