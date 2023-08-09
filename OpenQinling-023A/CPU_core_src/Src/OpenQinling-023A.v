@@ -1,5 +1,5 @@
-//OpenQinrange-023A内核
-module OpenQinrange_023A(
+//OpenQinling-023A内核
+module OpenQinling_023A(
 		input clk,//时钟接口
 		input int_ask,//中断请求接口
 		input[7:0]int_num,//中断号输入接口[0-255]
