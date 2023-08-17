@@ -312,13 +312,19 @@ QByteArray compileCode(QString asm_txt,uint* isSuccess){
                 if(size_bin==0xffffffff){*isSuccess=0;return compileError(index,order_txt,"rw size error");}
                 order_bin = order_bin | size_bin<<24;
 
-                uint address = compileDataChannel(orderArgs.at(1));
-                if(address==0xffffffff){*isSuccess=0;return compileError(index,order_txt,"channel select error");}
-                order_bin = order_bin | address<<20;
-
-                uint data = compileDataChannel(orderArgs.at(2));
+                uint data = compileDataChannel(orderArgs.at(1));
                 if(data==0xffffffff){*isSuccess=0;return compileError(index,order_txt,"channel select error");}
-                order_bin = order_bin | data<<16;
+                order_bin = order_bin | data<<20;
+
+                uint num;
+                uint address = compileImmeNumChannnel(orderArgs.at(2),&num);
+                if(address==0xffffffff){*isSuccess=0;return compileError(index,order_txt,"channel select error");}
+                else if(address == 0){
+                    if(num>65535){*isSuccess=0;return compileError(index,order_txt,"num too big");}
+                    order_bin = order_bin | num;
+                }else{
+                    order_bin = order_bin | address<<16;
+                }
 
             }else if(order=="WE" || order=="we" ){
                 if(orderArgs.length()!=3){*isSuccess=0;return compileError(index,order_txt,"order format error");}
@@ -327,17 +333,17 @@ QByteArray compileCode(QString asm_txt,uint* isSuccess){
                 if(size_bin==0xffffffff){*isSuccess=0;return compileError(index,order_txt,"rw size error");}
                 order_bin = order_bin | size_bin<<24;
 
-                uint address = compileDataChannel(orderArgs.at(1));
-                if(address==0xffffffff){*isSuccess=0;return compileError(index,order_txt,"channel select error");}
-                order_bin = order_bin | address<<20;
-                uint num;
-                uint data = compileImmeNumChannnel(orderArgs.at(2),&num);
+                uint data = compileDataChannel(orderArgs.at(1));
                 if(data==0xffffffff){*isSuccess=0;return compileError(index,order_txt,"channel select error");}
-                else if(data == 0){
+                order_bin = order_bin | data<<20;
+                uint num;
+                uint address = compileImmeNumChannnel(orderArgs.at(2),&num);
+                if(address==0xffffffff){*isSuccess=0;return compileError(index,order_txt,"channel select error");}
+                else if(address == 0){
                     if(num>65535){*isSuccess=0;return compileError(index,order_txt,"num too big");}
                     order_bin = order_bin | num;
                 }else{
-                    order_bin = order_bin | data<<16;
+                    order_bin = order_bin | address<<16;
                 }
             }else if(order=="POP" || order=="pop"){
                 if(orderArgs.length()!=2){*isSuccess=0;return compileError(index,order_txt,"order format error");}
@@ -941,7 +947,6 @@ QString removeExpNote(QString txt){
 }
 
 
-
 int main(int argc, char *argv[])
 {
     QStringList args;
@@ -976,10 +981,16 @@ int main(int argc, char *argv[])
             if(args.length()==2){//如果没指定二进制机器码的输出文件，就在汇编文件目录下创建一个同名.bin文件，存储输出的二进制码
                 QFileInfo asm_fileinfo(asm_file);
                 bin_file.setFileName(asm_fileinfo.absolutePath()+asm_fileinfo.baseName()+".bin");
+                if(bin_file.exists()){
+                    bin_file.remove();
+                }
                 bin_file.open(QIODevice::ReadWrite);
                 bin_file.write(bin);
             }else{
                 bin_file.setFileName(args.at(2));
+                if(bin_file.exists()){
+                    bin_file.remove();
+                }
                 bin_file.open(QIODevice::ReadWrite);
                 bin_file.write(bin);
             }
@@ -1007,10 +1018,16 @@ int main(int argc, char *argv[])
             if(args.length()==2){//如果没指定二进制机器码的输出文件，就在汇编文件目录下创建一个同名.bin文件，存储输出的二进制码
                 QFileInfo asm_fileinfo(asm_file);
                 bin_file.setFileName(asm_fileinfo.absolutePath()+asm_fileinfo.baseName()+".bin");
+                if(bin_file.exists()){
+                    bin_file.remove();
+                }
                 bin_file.open(QIODevice::ReadWrite);
                 bin_file.write(bin);
             }else{
                 bin_file.setFileName(args.at(2));
+                if(bin_file.exists()){
+                    bin_file.remove();
+                }
                 bin_file.open(QIODevice::ReadWrite);
                 bin_file.write(bin);
             }
