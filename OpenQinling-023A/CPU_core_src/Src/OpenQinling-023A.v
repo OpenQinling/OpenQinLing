@@ -1,11 +1,5 @@
-/*
-*该项目遵循GPL3.0开源协议
-*创建日期:2023年7月
-*最后修改日期:2023年8月
-*作者QQ邮箱地址:1969798169@qq.com
-*/
-//OpenQinling-023A内核
-module OpenQinling_023A(
+//Open-Enlightenment-023A内核
+module CPU_023A(
 		input clk,//时钟接口
 		input int_ask,//中断请求接口
 		input[7:0]int_num,//中断号输入接口[0-255]
@@ -179,7 +173,7 @@ module OpenQinling_023A(
 		interrupt2,interrupt_num2
 	);
 	
-	wire [31:0]data_ram_data_bus,data_ram_add_bus;
+	wire [31:0]data_ram_data_bus_r,data_ram_data_bus_w,data_ram_data_bus,data_ram_add_bus;
 	wire [1:0]data_ram_size,data_ram_rw;
 	
 	wire [3:0]y1_channel;
@@ -195,8 +189,12 @@ module OpenQinling_023A(
 	assign data_rw = int_arm_ask? int_arm_rw:data_ram_rw;
 	assign data_size = int_arm_ask? int_arm_size:data_ram_size;
 	assign data_address = int_arm_ask? int_arm_add:data_ram_add_bus;
-	assign int_arm_data = int_arm_ask ? data_bus : 32'bz;
-	assign data_ram_data_bus = !int_arm_ask ? data_bus : 32'bz;
+	
+	assign data_bus = int_arm_ask?32'bz:data_ram_data_bus_w;
+	assign data_ram_data_bus_r = data_bus;
+	assign int_arm_data = data_bus;
+	assign data_ram_data_bus_w = (!int_arm_ask && data_ram_rw==3)?data_ram_data_bus:32'bz;
+	assign data_ram_data_bus = (!int_arm_ask && data_ram_rw==2)?data_ram_data_bus_r:32'bz;
 	
 	
 	ExecuteModule execute(
@@ -206,8 +204,6 @@ module OpenQinling_023A(
 		x1,x2,
 		y1_channel_select,
 		y2_channel_select,
-		
-		
 		data_ram_data_bus,data_ram_add_bus,
 		data_ram_size,data_ram_rw,
 		data_rw_cplt,
