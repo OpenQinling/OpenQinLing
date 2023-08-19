@@ -1,4 +1,4 @@
-﻿#ifndef GENERATEMEMORYMALLOCINFO_H
+#ifndef GENERATEMEMORYMALLOCINFO_H
 #define GENERATEMEMORYMALLOCINFO_H
 #pragma execution_character_set("utf-8")
 #include "AnalysisMemoryBlock.h"
@@ -62,6 +62,7 @@ QList<MemoryMallocInfo> deconMemory(QByteArray bin){
                 tmp[j] = c;
             }
             memInfo.bin = QByteArray((const char*)tmp,dataLength);
+            delete [] tmp;
         }
         list.append(memInfo);
     }
