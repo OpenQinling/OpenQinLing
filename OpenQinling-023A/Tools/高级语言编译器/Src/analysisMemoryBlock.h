@@ -1,4 +1,4 @@
-﻿#ifndef ANALYSISMEMORYBLOCK_H
+#ifndef ANALYSISMEMORYBLOCK_H
 #define ANALYSISMEMORYBLOCK_H
 #include <QCoreApplication>
 #include <QDebug>
@@ -990,7 +990,6 @@ QByteArray compileCodeBlock(QList<Order> &orderList,int*isSrc=NULL){
     QStringList asm_txt = reductionASMtxt(orderList);
     QByteArray bin;
     uint isSuccess = 0;
-    qDebug()<<asm_txt;
     bin = compileCode(asm_txt,&isSuccess);
     if(isSrc!=NULL){
         *isSrc = isSuccess;
