@@ -1,4 +1,4 @@
-﻿#include <QCoreApplication>
+#include <QCoreApplication>
 #include <QDebug>
 #include <QFile>
 #include <QFileInfo>
@@ -24,7 +24,6 @@ int main(int argc, char *argv[])
                     return -1;
                 }
                 QString asm_txt = asm_file.readAll();//读取汇编文本
-
                 //编译为2进制指令
                 int errorCode = 0;
                 QString errorMessage;
@@ -54,7 +53,17 @@ int main(int argc, char *argv[])
                     bin_file.open(QIODevice::ReadWrite);
                     bin_file.write(bin);
                 }
-                qDebug()<<"\033[40;32mwrite back binary machine instruction finish!\033[0m";
+
+                qDebug()<<"\033[40;32mMemory Usage:\033[0m";
+                for(int i = 0;i<3;i++){
+                    foreach(MemoryMallocInfo info,memInfo){
+                        if(info.device==i){
+                            qDebug()<<info.toString();
+                        }
+                    }
+                }
+
+                qDebug()<<"\033[40;32mCompile complete!\033[0m";
             }
             else if(args.at(0)=="-t"){//将二进制数据转换为TB测试文本
                 if(args.length()!=2){
@@ -79,8 +88,7 @@ int main(int argc, char *argv[])
                     qDebug()<<"------------------\nCODE:\n"<<tb_txt[1].toUtf8().data();
                 }
 
-
-                qDebug()<<"\033[40;32mwrite back binary data finish!\033[0m";
+                qDebug()<<"\033[40;32mGenerate tb txt complete!\033[0m";
             }
             else{
                 qDebug()<<"\033[40;31mError:parameter format error\033[0m";
