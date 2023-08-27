@@ -1,3 +1,5 @@
+#ifndef ANALYSISMEMORYMALLOCINFO_H
+#define ANALYSISMEMORYMALLOCINFO_H
 #include <QByteArray>
 #include <QString>
 #include <QBuffer>
@@ -109,3 +111,4 @@ QList<MemoryMallocInfo> deconMemory(QByteArray bin){
 
     return list;
 }
+#endif // ANALYSISMEMORYMALLOCINFO_H
