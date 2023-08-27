@@ -1,4 +1,4 @@
-module CPU_023A(
+module OpenQinling_023A(
 		input clk,//时钟接口
 		input int_ask,//中断请求接口
 		input[7:0]int_num,//中断号输入接口[0-255]
