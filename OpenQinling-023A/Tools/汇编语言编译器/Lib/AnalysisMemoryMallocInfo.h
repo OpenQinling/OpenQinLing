@@ -1,9 +1,8 @@
 #ifndef ANALYSISMEMORYMALLOCINFO_H
 #define ANALYSISMEMORYMALLOCINFO_H
-#include <QByteArray>
-#include <QString>
 #include <QBuffer>
 #include <QDataStream>
+
 //内存分配信息:[用于记录在编译完成后，物理内存的利用情况]
 class MemoryMallocInfo{
 public:
@@ -14,22 +13,23 @@ public:
     QByteArray bin;//如果被使用了，该内存中存储的二进制数据
     int device =0;//当前内存所属的物理设备。如果是冯诺依曼架构就是0，
                   //如果是哈佛架构,指令内存为1，数据内存为2
+    int devID = 0;//设备号[一个程序数据可能分配在多个物理存储器上，该参数记录当前分配的物理存储器编号]
 
     QString toString(){
         QString type;
         if(isUsage==0){
-            type = "Free";
+            type = "\033[36mFree\033[0m";
         }else if(isUsage==1){
             type = name;
         }else if(isUsage==2){
-            type = "Stack";
+            type = "\033[35mStack\033[0m";
         }
 
-        QString dev;
+        QString dev = "BLOCK";
         if(device==1){
-            dev = ":CODE";
+            dev = "CODE";
         }else if(device==2){
-            dev = ":DATA";
+            dev = "DATA";
         }
         QString base = QString::number(baseAddress,16);
         while (base.length()<8) {
@@ -41,34 +41,43 @@ public:
             end.prepend("0");
         }
         end.prepend("0x");
-        return "<"+base+"-"+end+">"+type+dev;
-    }
-};
-//把MemoryMallocInfo整合成.bin文件的二进制文件结构
-QByteArray inteMemory(QList<MemoryMallocInfo> mem){
-    QByteArray list;
-    QBuffer buffer(&list);
-    buffer.open(QIODevice::WriteOnly);
-    QDataStream stream(&buffer);
-    stream<<mem.length();
-    foreach(MemoryMallocInfo info,mem){
-        stream<<info.isUsage;
-        stream<<info.device;
-        stream<<info.baseAddress;
-        stream<<info.endAddress;
-        if(info.isUsage==1){
-            stream<<info.name.toUtf8().length();
-            foreach(uchar c,info.name.toUtf8()){
-                 stream<<c;
+
+        double size = endAddress-baseAddress+1;
+        int unit = 0;//长度的单位(0B 1KB 2MB 3GB)
+        while(size>=1024){
+            size /= 1024;
+            unit++;
+        }
+
+        QString sizeText = QString::number(size);
+        if(sizeText.contains(".")){
+            //如果sizeText存在小数，小数位数限制在2位
+            int i = 0;
+            while(sizeText.at(sizeText.length()-1-i)!='.'){
+                i++;
             }
-            stream<<info.bin.length();
-            foreach(uchar c,info.bin){
-                 stream<<c;
+
+            while(i>2){
+                i--;
+                sizeText.remove(sizeText.length()-1,1);
             }
         }
+
+
+        QString uintText;
+        if(unit==0){
+            uintText = "B";
+        }else if(unit==1){
+            uintText = "KB";
+        }else if(unit==2){
+            uintText = "MB";
+        }else if(unit==2){
+            uintText = "GB";
+        }
+
+        return dev+QString::number(devID)+":\t-area["+base+"-"+end+"]\t-type["+type+"]\t-size["+sizeText+uintText+"]";
     }
-    return list;
-}
+};
 //从.bin文件中分离出MemoryMallocInfo
 QList<MemoryMallocInfo> deconMemory(QByteArray bin){
     QList<MemoryMallocInfo> list;
@@ -82,6 +91,7 @@ QList<MemoryMallocInfo> deconMemory(QByteArray bin){
         MemoryMallocInfo memInfo;
         stream>>memInfo.isUsage;
         stream>>memInfo.device;
+        stream>>memInfo.devID;
         stream>>memInfo.baseAddress;
         stream>>memInfo.endAddress;
         if(memInfo.isUsage==1){
