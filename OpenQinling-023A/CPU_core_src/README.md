@@ -6,28 +6,36 @@
 <-023A-CPU实例化示例代码(verilog语言)->
     
     OpenQinling_023A core(
-		clk,//连接时钟信号源[建议在80-100MHZ]
-
-          //外部中断接口
-		int_ask,//外部中断请求信号输入[1bit]
-		int_num,//外部中断的中断号输入[8bits]
-
-          //连接mmu接口[cpu core中不包含mmu/cache等设备，需根据cpu特性自行制作]如果不使用虚拟内存，可不连接
-		is_enable_vm,//cpu是否启用了mmu
-		tlb_address,//cpu如果启用了mmu,mmuTLB表的内存地址[32bits]
-
-          //连接指令缓存的接口
-		order_bus,//指令数据传输的总线[32bits]
-		orderAddress_bus,//要读取的指令的地址总线[32bits]
-		loadOrder_cplt,//指令缓存器响应的信号线,当为1表示响应了,cpu在读取指令时会阻塞等待响应信号[1bit]
-
-          //连接数据缓存的接口
-		data_bus,//数据读写总线,如果单次读1-2字节，数据从低位传输[32bits]
-		dataAddress_bus,//数据访问地址输出[32bits]
-		dataRW_ctrl,//数据读写请求信号线,0/1为不读不写,2为读,3为写[2bits]
-		dataRW_size,//读写的数据量，1-4字节。1位读1字节，2位读2字节，3为读4字节
-		dataRW_cplt,//读写数据缓存响应的接口，当为1表示响应了，cpu在读写数据会阻塞
-
-           //cpu内存寄存器数据的查看接口(用于Debug);sys_d为3bits,其余都为32bits
-		r1_d,r2_d,r3_d,r4_d,r5_d,r6_d,r7_d,r8_d,flag_d,pc_d,tpc_d,ipc_d,sp_d,tlb_d,sys_d
+		clk,//时钟输入
+                
+                /////////////中断信号输入///////////////////
+		int_ask,//中断请求接口
+		int_num,//中断号输入接口[0-255]
+		
+                /////////////虚拟内存启用状态信息输出[该cpu ip不内置mmu]//////////////
+		is_enable_vm,//虚拟内存是否启用
+		tlb_address,//虚拟内存tlb表地址输出[0-4GB]
+		
+                /////////////取指通道///////////////////////
+		order_bus,//指令加载总线[4bytes]
+		order_address,//指令地址输出[0-4GB]
+		order_read_cplt,//指令缓存响应信号输入
+		
+                /////////////内存读写/外设寄存器读写通道///////////////////////////
+		data_bus_r,//内存读总线
+		data_bus_w,//内存写总线
+		data_address,//内存地址输出[0-4GB]
+		data_rw,//内存读写模式控制[0/1不读不写,2读,3写]
+		data_size,//单次内存读写字节数控制[1-4bytes]
+		data_rw_cplt,//数据缓存响应信号输入[高电平有效]
+		
+                //[在cpu暂停情况下,如果此次内存/外设寄存器读写任务完成了,data_rw_cplt应当保持有效,直到stoping=0,否则可能造成cpu的卡死]
+		stoping,//cpu暂停中[高电平有效]
+                
+                //[如果当下面这2个信号任意一有效时,此次内存/外设寄存器任务尚未完成,内存/外设应当立刻停止此次读写任务,否则可能造成下一次的读写任务发生异常]
+		intering,//cpu响应中断中[高电平有效]
+		rsting,//cpu重启中[高电平有效]
+		
+		/////////////cpu内部寄存器数据查看接口(都为32位，用于Debug)/////////////////////
+		r1_d,r2_d,r3_d,r4_d,r5_d,r6_d,cs_d,ds_d,flag_d,pc_d,tpc_d,ipc_d,sp_d,tlb_d,sys_d
 	);
