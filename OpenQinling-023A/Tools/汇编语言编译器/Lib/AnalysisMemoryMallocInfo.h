@@ -4,6 +4,8 @@
 #include <QDataStream>
 
 //内存分配信息:[用于记录在编译完成后，物理内存的利用情况]
+/*从编译出的.bin文件中会解析出QList<MemoryMallocInfo>，如果自行开发编译器，应当遍历这些MemoryMallocInfo对象,
+  并根据对象中的内存块分配信息，将其中的二进制数据写入指定内存设备的指定地址上*/
 class MemoryMallocInfo{
 public:
     uint baseAddress;//起始地址
