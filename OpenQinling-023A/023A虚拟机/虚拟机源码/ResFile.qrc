@@ -1,0 +1,6 @@
+<RCC>
+    <qresource prefix="/new">
+        <file>AppICON.ico</file>
+        <file>favicon.png</file>
+    </qresource>
+</RCC>
