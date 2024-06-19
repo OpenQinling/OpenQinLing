@@ -1,2 +1,0 @@
-copy "F:\Qt\build-023A_DOWNLOAD-V2_0-Desktop_Qt_5_14_2_MinGW_32_bit-Release\release\023A_DOWNLOAD-V2_0.exe" "F:\Test023A_Project\023A-TOOL\023A_DOWNLOAD-V2_0.exe"
-copy "F:\Qt\build-023A_CC-Desktop_Qt_5_14_2_MinGW_32_bit-Release\release\023A_CC.exe" "F:\Test023A_Project\023A-TOOL\023A_CC.exe"
