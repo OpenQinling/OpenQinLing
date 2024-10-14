@@ -1,4 +1,6 @@
-
+///////////////////////////////////////////////////
+//TB测试文件(可以指定编译生成的.bin文件进行仿真运行)
+//////////////////////////////////////////////////
 module VritualMemory#(
 	parameter integer memLen = 1024*1024,
 	parameter string binPath = ""
@@ -30,7 +32,7 @@ module VritualMemory#(
 	always_ff@(posedge clk or negedge rst)begin
 		if(!rst)begin
 			integer file;
-			file = $fopen(binPath,"rb");// "rb"表示以二进制读模式打�?
+			file = $fopen(binPath,"rb");
 			if (file == 0) begin
 				$display("Error opening file!!!");
 			end
@@ -69,55 +71,48 @@ module TestBench__TopModule();
 
 
 	logic [63:0]allRegValue[31];
-	logic askInterHandle;//连接内设就行,当为1时表示CPU已经在中断响应处理流程中
-	logic askRestartHandle;//连接�?有内设和外设,当为1时表示CPU已经在重启处理流程中
-	wire allDeviceBeReadyInter;//�?1表示�?有内设都已经准备好进行中断响�?
-	wire allDeviceBeReadyRestart;//�?1表示�?有内设和外设都已经准备好进行重启
+	logic askInterHandle;
+	logic askRestartHandle;
+	wire allDeviceBeReadyInter;
+	wire allDeviceBeReadyRestart;
 	
-	wire interAsk = 0;//外部中断请求
-	logic [7:0]interCode = 16;//外部中断�?
+	wire interAsk = 0;
+	logic [7:0]interCode = 16;
 	IO_Interface ioInterface();
 	FetchOrder_Interface fetchFace();
 
 	SingleChannelIO sIoFace();
 
 	SingleChannelIO_TransMod transMod(clk,//时钟
-						rst,//硬重�?
-						//对于askInterHandle请求信号，如果当前正在执行写内存任务执行到了�?半，必须要将内存恢复到开始执行此次写任务前的状�?��??
-						askInterHandle,//连接内设就行,当为1时表示CPU已经在中断响应处理流程中
-						askRestartHandle,//连接�?有内设和外设,当为1时表示CPU已经在重启处理流程中
-						allDeviceBeReadyInter,//返回1表示已经准备好进行中断响�?
-						allDeviceBeReadyRestart,//返回1表示已经准备好进行重�?
+						rst,
+						askInterHandle,
+						askRestartHandle,
+						allDeviceBeReadyInter,
+						allDeviceBeReadyRestart,
 						ioInterface,
-						fetchFace,//只支持以此取�?条指�?
+						fetchFace,
 						sIoFace
 						);
 
 
 	VritualMemory#(
 		.memLen(1024*1024),
-		.binPath("D:\\Files\\Test024A_Project\\main.bin")
+		.binPath("D:\\Files\\Test024A_Project\\main.bin") //指定的.bin文件路径(仿真测试时,请改成字节的.bin测试文件路径)
 	) vritual(
 		sIoFace,
 		clk,
 		rst
 	);
 	OpenQinling_024ACore core(
-		//时钟/硬重启信�?
 		clk,rst,
-		//�?有程序员可见寄存器的信息
 		allRegValue,
-		//CPU内核连接外设/内设的接�?
-		askInterHandle,//连接内设就行,当为1时表示CPU已经在中断响应处理流程中
-		askRestartHandle,//连接�?有内设和外设,当为1时表示CPU已经在重启处理流程中
-		allDeviceBeReadyInter,//�?1表示�?有内设都已经准备好进行中断响�?
-		allDeviceBeReadyRestart,//�?1表示�?有内设和外设都已经准备好进行重启
-		//中断模块的中断链接请�?
-		interAsk,//外部中断请求
-		interCode,//外部中断�?
-		//连接cpu数据缓存/MMU的接�?
+		askInterHandle,
+		askRestartHandle,
+		allDeviceBeReadyInter,
+		allDeviceBeReadyRestart,
+		interAsk,
+		interCode,
 		ioInterface,
-		//连接ICache的取指接�?
 		fetchFace
 	);
 endmodule
